@@ -27,7 +27,8 @@ export class AppComponent implements OnInit {
     //   (value) => console.log(value)
     // );
     this.signupForm.statusChanges.subscribe(
-      (status) => console.log(status)
+      (status) => console.log(status),
+      (error) => console.error('Form status stream errored:', error)
     );
     this.signupForm.setValue({
       'userData': {
@@ -64,10 +65,15 @@ export class AppComponent implements OnInit {
   forbiddenEmails(control: FormControl): Promise<any> | Observable<any> {
     const promise = new Promise<any>((resolve, reject) => {
       setTimeout(() => {
-        if (control.value === 'test@test.com') {
-          resolve({'emailIsForbidden': true});
-        } else {
-          resolve(null);
+        try {
+          if (control.value === 'test@test.com') {
+            resolve({'emailIsForbidden': true});
+          } else {
+            resolve(null);
+          }
+        } catch (error) {
+          console.error('Email validation failed:', error);
+          reject(error);
         }
       }, 1500);
     });
